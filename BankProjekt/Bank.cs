@@ -75,7 +75,23 @@ namespace BankProjekt
         // akkor false visszatérési érték
         public bool Utal(string honnan, string hova, ulong osszeg)
         {
-            throw new NotImplementedException();
+            Szamla honnanSzamla = SzamlaKeres(honnan);
+            Szamla hovaSzamla = SzamlaKeres(hova);
+            if (honnan.Equals(hova))
+            {
+                throw new ArgumentException("Önmagának nem tud utalni", "hova");
+            }
+            if (osszeg == 0)
+            {
+                throw new ArgumentException("Nulla Forint utalása nem lehetséges", "osszeg");
+            }
+            if (honnanSzamla.Egyenleg < osszeg)
+            {
+                return false;
+            }
+            honnanSzamla.Egyenleg -= osszeg;
+            hovaSzamla.Egyenleg += osszeg;
+            return true;
         }
 
         // Lekérdezi az adott számlán lévő pénzösszeget
