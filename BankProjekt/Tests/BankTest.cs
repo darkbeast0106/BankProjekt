@@ -90,5 +90,65 @@ namespace BankProjekt.Tests
             Assert.AreEqual(10000, b.Egyenleg("1234"));
             Assert.AreEqual(0, b.Egyenleg("5678"));
         }
+        [TestCase]
+        public void Utal0Forint()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.Throws<ArgumentException>(() 
+                => b.Utal("1234", "5678", 0));
+        }
+
+        [TestCase]
+        public void UtalNincsElegPenz()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.IsFalse(b.Utal("1234", "5678", 20000));
+            Assert.AreEqual(10000, b.Egyenleg("1234"));
+            Assert.AreEqual(0, b.Egyenleg("5678"));
+        }
+
+        [TestCase]
+        public void UtalMindenSikeres()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.IsTrue(b.Utal("1234", "5678", 3000));
+            Assert.AreEqual(7000, b.Egyenleg("1234"));
+            Assert.AreEqual(3000, b.Egyenleg("5678"));
+        }
+        [TestCase]
+        public void OnmaganakUtal()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.Throws<ArgumentException>(()
+                => b.Utal("1234", "1234", 3000));
+        }
+
+        [TestCase]
+        public void UtalNemLetezoSzamlara()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.Throws<HibasSzamlaszamException>(()
+                => b.Utal("1234", "4321", 3000));
+        }
+        [TestCase]
+        public void UtalNemLetezoSzamlarol()
+        {
+            b.UjSzamla("Teszt Elek", "1234");
+            b.UjSzamla("Nagy Árpád", "5678");
+            b.EgyenlegFeltolt("1234", 10000);
+            Assert.Throws<HibasSzamlaszamException>(()
+                => b.Utal("4321", "5678", 3000));
+        }
+
     }
 }
